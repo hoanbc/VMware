@@ -1,0 +1,28 @@
+Mục đích: Dịch chuyển kết nối từ mô hình mạng truyền thống vào môi trường NSX nhưng vẫn giữ nguyên routing và lớp mạng
+
+Sơ đồ kết nối: SEG-Overlay-Bridge(with tag vlanid 15) -> EDGE -> Physical L3 -> Server or VM (with tag vlanid 15)
+
+Bước 1) Tạo Edge Bridge Profile
+Name: nsx-edge-bridge-profile
+Edge Cluster: nsx-edge-cluster
+Primary Node: nsx-edge1
+Backup Node: nsx-edge2
+FailOver: Preeptive
+
+Bước 2) Tạo Segments (sử dụng Segment này để gán cho VM sử dụng hệ thống NSX)
+Segment Name: nsx-seg-overlay-sub15
+Connected Gateway: None
+Transport Zone: nsx-overlay-transport-vm
+Edge Bridges: 
+		Edge Bridge Profile: nsx-edge-bridge-profile
+		Transport Zone: nsx-vlan-transport-edge
+		VLAN: 15
+
+Bước 3) Thay đổi Security cổng PG Trunk đấu nối EDGE với mạng Physical
+Promiscuous mode: Accept
+Forged transmits: Access
+
+Bước 4) Gán Segments ở bước 2 vào VM mong muốn sau đó kiểm tra kết nối
+
+
+Link: https://docs.vmware.com/en/VMware-NSX-T-Data-Center/3.1/migration/GUID-82200D14-EA05-4331-ADE7-2C3BB5F4CC5C.html
